@@ -1,0 +1,14 @@
+{
+  "type": "module",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "gtfs-realtime-bindings": "^1.1.1",
+    "node-fetch": "^3.3.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "start": "node --experimental-specifier-resolution=node server.mjs"
+  }
+}
