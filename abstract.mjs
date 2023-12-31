@@ -1,4 +1,4 @@
-import { getTrainTimes, getGlobalTotalTime, getGlobalTotalTimeAsText } from './findDifference.mjs';
+import { getTrainTimes, getGlobalTotalTime, getGlobalTotalTimeAsText, getTrainRunning } from './findDifference.mjs';
 import * as stops from "./trainStops.js";
 import { SIX_LOCAL, SIX_EXPRESS, NORTH } from './constants.js';
 
@@ -32,38 +32,82 @@ export async function main() {
 
   console.log(getGlobalTotalTimeAsText());
   const expressAsText = getGlobalTotalTimeAsText();
-
-
-
-
-  if(local > express){
-    console.log();
-    console.log("The express gets you to Parkchester faster"); 
-    
-    console.log();
-
-    console.log("Express time: " + expressAsText);
-    console.log("Local time:" + localAsText);
-    return { 
-      message: 'The express gets you to Parkchester faster',
-      expressTime: "Express time: " + expressAsText,
-      localTime: "Local time:" + localAsText,
   
-  };
+  let expressMessage = "";
+  let localMessage = "";
+  if(!getTrainRunning(SIX_EXPRESS))
+  {
+    expressMessage = "Express Train is not Running";
   } else{
-    console.log();
-    console.log("The local gets you to Parkchester faster");
-    console.log();
+    expressMessage = "Express time: " + expressAsText;
+  }
 
-    console.log("Express time: " + expressAsText);
-    console.log("Local time:" + localAsText);
-    return { 
-      message: 'The local gets you to Parkchester faster',
-      expressTime: "Express time: " + expressAsText,
-      localTime: "Local time:" + localAsText,
+  if(!getTrainRunning(SIX_LOCAL))
+  {
+    localMessage = "Local Train is not Running";
+  } else{
+    localMessage = "Local time: " + localAsText;
+  }
+
+
+  if((local > express))
+  {
+    if(getTrainRunning(SIX_EXPRESS))
+    {
+      console.log();
+      console.log("The express gets you to Parkchester faster"); 
+      
+      console.log();
   
-  };
-    
+      console.log(expressMessage);
+      console.log(localMessage);
+      return { 
+        message: 'The express gets you to Parkchester faster',
+        expressTime: expressMessage,
+        localTime: localMessage
+    };
+    }else{
+      console.log();
+      console.log("The local gets you to Parkchester faster"); 
+      
+      console.log();
+  
+      console.log(expressMessage);
+      console.log(localMessage);
+      return { 
+        message: 'The local gets you to Parkchester faster',
+        expressTime: expressMessage,
+        localTime: localMessage
+      }
+    } 
+  } else{
+      if(getTrainRunning(SIX_EXPRESS))
+      {
+      console.log();
+      console.log("The local gets you to Parkchester faster");
+      console.log();
+
+      console.log(expressMessage);
+      console.log(localMessage);
+      return { 
+        message: 'The local gets you to Parkchester faster',
+        expressTime: expressMessage,
+        localTime: localMessage,
+        };
+      } else{
+        console.log();
+        console.log("The Express gets you to Parkchester faster");
+        console.log();
+
+        console.log(expressMessage);
+        console.log(localMessage);
+        return { 
+          message: 'The Express gets you to Parkchester faster',
+          expressTime: expressMessage,
+          localTime: localMessage,
+          };
+      }
+
   }
 }
 

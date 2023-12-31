@@ -1,6 +1,7 @@
 import GtfsRealtimeBindings from "gtfs-realtime-bindings";
 import fetch from "node-fetch";
 import fs from "fs";
+import { SIX_LOCAL, SIX_EXPRESS, NORTH } from './constants.js';
 
 // Read the stops.txt data and create getTrainTimes mapping
 const stopsData = fs.readFileSync("stops.txt", "utf8");
@@ -9,12 +10,10 @@ const stopMapping = {};
 let mantime = 0;
 let bronxtime = 0;
 let manCounter = 0;
-const EXPRESS = "X";
-const LOCAL_SIX = "6";
-const NORTH = "N";
-const SOUTH = "S";
 let timeDifference = 0;
 let globalTotalTime = 0;
+let expressRunning = true;
+let localRunning = true;
 
 
 const lines = stopsData.trim().split("\n").slice(1); // Skip the header
@@ -77,7 +76,7 @@ export function getTrainTimes(train, direction, stopNum){
         const result = [];
         mantime = 0;
         manCounter = 0;
-          globalTotalTime = 0;
+        globalTotalTime = 0;
         
         
           
@@ -93,7 +92,6 @@ export function getTrainTimes(train, direction, stopNum){
                 tripUpdate.stopTimeUpdate.forEach((stopTimeUpdate) => {
     
                   if (tripDescriptor.routeId.startsWith(train) && tripDescriptor.routeId.endsWith(train) && stopTimeUpdate.stopId.endsWith(direction) ) 
-                  // && parseInt(getStopNum(stopTimeUpdate.stopId)) <= 21
                   {
                     const formattedStopTimeUpdate = {
                       stopId: stopTimeUpdate.stopId,
@@ -169,7 +167,10 @@ export function getTrainTimes(train, direction, stopNum){
           });
           
           // Write the result to getTrainTimes JSON file
-          fs.writeFileSync("abstract.json", JSON.stringify(result, null, 2));
+          fs.writeFileSync("json/abstract.json", JSON.stringify(result, null, 2));
+
+          checkTrainRunning(manCounter, train);
+
           
       
         } catch (error) {
@@ -191,4 +192,28 @@ export function getGlobalTotalTime()
   return globalTotalTime;
 }
 
-  
+export function getTrainRunning(train){
+  if(train == SIX_EXPRESS)
+  {
+    return expressRunning;
+  }
+  if(train == SIX_LOCAL)
+  {
+    return localRunning;
+  }
+}
+
+function checkTrainRunning(manCounter, train)
+{
+  if(manCounter == 0)
+  {
+    if(train == "6X")
+    {
+      expressRunning = false;
+    }
+    if(train == "6")
+    {
+      localRunning = false;
+    }
+  }
+}
